@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,7 +18,7 @@ import com.egg.biblioteca.repositorios.LibroRepositorio;
 
 @Service
 public class LibroServicio {
-    private void validar(Long isbn,String titulo, Integer ejemplares, String idAutor, String idEditorial) throws MiException {
+    private void validar(Long isbn,String titulo, Integer ejemplares, UUID idAutor, UUID idEditorial) throws MiException {
         if (isbn == null || isbn==0) {
             throw new MiException("el isbn no puede ser nulo o 0");
         }
@@ -27,10 +28,10 @@ public class LibroServicio {
         if (ejemplares == null || ejemplares<0) {
             throw new MiException("los ejemplares no puede ser nulo o negativo");
         }
-        if ( idAutor == null || idAutor.isEmpty()) {
+        if ( idAutor == null) {
             throw new MiException("el idAutor no puede ser nulo o estar vacío");
         }
-        if (idEditorial == null || idEditorial.isEmpty()) {
+        if (idEditorial == null) {
             throw new MiException("el isbn no puede ser nulo o estar vacío");
         }
     }
@@ -45,7 +46,7 @@ public class LibroServicio {
     private EditorialRepositorio editorialRepositorio;
 
     @Transactional
-    public void crearLibro(Long isbn, String titulo, Integer ejemplares, String idAutor, String idEditorial) throws MiException {
+    public void crearLibro(Long isbn, String titulo, Integer ejemplares, UUID idAutor, UUID idEditorial) throws MiException {
         validar(isbn,titulo,ejemplares,idAutor,idEditorial);
         Autor autor = autorRepositorio.findById(idAutor).get();
         Editorial editorial = editorialRepositorio.findById(idEditorial).get();
@@ -73,7 +74,7 @@ public class LibroServicio {
     }
 
     @Transactional
-    public void modificarLibro(String titulo, Integer ejemplares, long isbn, String idAutor, String idEditorial) throws MiException {
+    public void modificarLibro(String titulo, Integer ejemplares, long isbn, UUID idAutor, UUID idEditorial) throws MiException {
         validar(isbn,titulo,ejemplares,idAutor,idEditorial);
         Optional<Libro> respuestaLibro = libroRepositorio.findById(isbn);
 
@@ -94,4 +95,38 @@ public class LibroServicio {
             }
         }
     }
+
+    @Transactional(readOnly = true)
+    public Libro getOne(Long isbn){
+        return libroRepositorio.getReferenceById (isbn);
+    }
+
+    @Transactional
+    public void modificarLibro(Long isbn, String titulo, Integer ejemplares, UUID idAutor, UUID idEditorial)
+            throws MiException {
+        validar(isbn, titulo, ejemplares, idAutor, idEditorial);
+        Optional<Libro> respuesta = libroRepositorio.findById(isbn);
+        Optional<Autor> respuestaAutor = autorRepositorio.findById(idAutor);
+        Optional<Editorial> respuestaEditorial = editorialRepositorio.findById(idEditorial);
+
+        Autor autor = new Autor();
+        Editorial editorial = new Editorial();
+
+        if (respuestaAutor.isPresent()) {
+            autor = respuestaAutor.get();
+        }
+
+        if (respuestaEditorial.isPresent()) {
+            editorial = respuestaEditorial.get();
+        }
+
+        if (respuesta.isPresent()) {
+            Libro libro = respuesta.get();
+            libro.setTitulo(titulo);
+            libro.setEjemplares(ejemplares);
+            libro.setAutor(autor);
+            libro.setEditorial(editorial);
+        }
+    }
+
 }

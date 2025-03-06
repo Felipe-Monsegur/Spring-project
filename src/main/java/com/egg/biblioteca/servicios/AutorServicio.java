@@ -3,12 +3,14 @@ package com.egg.biblioteca.servicios;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.egg.biblioteca.entidades.Autor;
+import com.egg.biblioteca.entidades.Editorial;
 import com.egg.biblioteca.excepciones.MiException;
 import com.egg.biblioteca.repositorios.AutorRepositorio;
 
@@ -33,7 +35,7 @@ public class AutorServicio {
     }
 
     @Transactional(readOnly = true)
-    public List<Autor> listarAutors() {
+    public List<Autor> listarAutores() {
 
         List<Autor> autores = new ArrayList<>();
 
@@ -42,7 +44,7 @@ public class AutorServicio {
     }
 
     @Transactional
-    public void modificarAutor(String nombre, String id) throws MiException {
+    public void modificarAutor(String nombre, UUID id) throws MiException {
         validar(nombre);
         Optional<Autor> respuesta = autorRepositorio.findById(id);
         if (respuesta.isPresent()) {
@@ -53,4 +55,8 @@ public class AutorServicio {
         }
     }
 
+    @Transactional(readOnly = true)
+    public Autor getOne(UUID id){
+        return autorRepositorio.getReferenceById (id);
+    }
 }
