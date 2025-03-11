@@ -11,7 +11,7 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableWebSecurity
 public class SeguridadWeb {
 
-  @Bean
+    @Bean
     public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
@@ -19,11 +19,25 @@ public class SeguridadWeb {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .authorizeHttpRequests((authorize) -> authorize                        
-                        .requestMatchers("/css/", "/js/", "/img/", "/**").permitAll()
-                )                
+                .authorizeHttpRequests(authorize -> authorize
+                        .requestMatchers( "/registro", "/css/**", "/img/**").permitAll()
+                        .requestMatchers("/", "/login", "/registrar").permitAll() // Permitir acceso a login y registrar
+                        .requestMatchers("/admin/**").hasRole("ADMIN") // 🔹 Permitir acceso solo a ADMIN
+                .anyRequest().authenticated())
+                .formLogin(form -> form
+                        .loginPage("/login")
+                        .loginProcessingUrl("/logincheck")
+                        .usernameParameter("email")
+                        .passwordParameter("password")
+                        .defaultSuccessUrl("/inicio",true)
+                        .failureUrl("/login?error=true")
+                        .permitAll())
+                .logout(logout -> logout
+                        .logoutUrl("/logout")
+                        .logoutSuccessUrl("/login")
+                        .permitAll())
                 .csrf(csrf -> csrf.disable());
         return http.build();
     }
-}
 
+}
