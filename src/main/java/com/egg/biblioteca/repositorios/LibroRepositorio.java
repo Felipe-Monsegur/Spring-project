@@ -11,8 +11,8 @@ import com.egg.biblioteca.entidades.*;
 
 @Repository
 public interface LibroRepositorio extends JpaRepository<Libro, Long> {
-     @Query("SELECT l FROM Libro l WHERE l.titulo = :titulo")
-     public Libro buscarPorTitulo(@Param("titulo") String titulo);
+      @Query("SELECT l FROM Libro l WHERE l.titulo = :titulo")
+      public Libro buscarPorTitulo(@Param("titulo") String titulo);
 
       @Query("SELECT l FROM Libro l WHERE l.autor.nombre = :nombre")
       public List<Libro> buscarPorAutor(@Param("nombre") String nombre);
