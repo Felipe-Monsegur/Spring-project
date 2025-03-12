@@ -18,6 +18,16 @@ import com.egg.biblioteca.repositorios.LibroRepositorio;
 
 @Service
 public class LibroServicio {
+
+    @Autowired
+    private LibroRepositorio libroRepositorio;
+
+    @Autowired
+    private AutorRepositorio autorRepositorio;
+
+    @Autowired
+    private EditorialRepositorio editorialRepositorio;
+
     private void validar(Long isbn,String titulo, Integer ejemplares, UUID idAutor, UUID idEditorial) throws MiException {
         if (isbn == null || isbn==0) {
             throw new MiException("el isbn no puede ser nulo o 0");
@@ -35,16 +45,7 @@ public class LibroServicio {
             throw new MiException("el isbn no puede ser nulo o estar vacío");
         }
     }
-
-    @Autowired
-    private LibroRepositorio libroRepositorio;
-
-    @Autowired
-    private AutorRepositorio autorRepositorio;
-
-    @Autowired
-    private EditorialRepositorio editorialRepositorio;
-
+    
     @Transactional
     public void crearLibro(Long isbn, String titulo, Integer ejemplares, UUID idAutor, UUID idEditorial) throws MiException {
         validar(isbn,titulo,ejemplares,idAutor,idEditorial);

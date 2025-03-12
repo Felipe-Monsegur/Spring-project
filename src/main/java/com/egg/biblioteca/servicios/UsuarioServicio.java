@@ -31,19 +31,6 @@ public class UsuarioServicio implements UserDetailsService {
     @Autowired
     private UsuarioRepositorio usuarioRepositorio;
 
-    @Transactional
-    public void registrar(String nombre,String email, String password, String password2) throws MiException{
-        validar(nombre, email, password, password2);
-        Usuario usuario = new Usuario();
-        usuario.setNombre(nombre);
-        usuario.setEmail(email);
-         usuario.setPassword(new BCryptPasswordEncoder().encode(password));
-        usuario.setRol(Rol.USER);
-
-        usuarioRepositorio.save(usuario);
-    }
-
-    
     private void validar(String nombre, String email, String password, String password2) throws MiException {
         if (nombre.isEmpty() || nombre == null) {
             throw new MiException("el nombre no puede ser nulo o estar vacío");
@@ -59,6 +46,17 @@ public class UsuarioServicio implements UserDetailsService {
         }
     }
 
+    @Transactional
+    public void registrar(String nombre, String email, String password, String password2) throws MiException {
+        validar(nombre, email, password, password2);
+        Usuario usuario = new Usuario();
+        usuario.setNombre(nombre);
+        usuario.setEmail(email);
+        usuario.setPassword(new BCryptPasswordEncoder().encode(password));
+        usuario.setRol(Rol.USER);
+
+        usuarioRepositorio.save(usuario);
+    }
 
     @Transactional(readOnly = true)
     public List<Usuario> listarUsuarios() {
@@ -67,13 +65,17 @@ public class UsuarioServicio implements UserDetailsService {
         return usuarios;
     }
 
+    @Transactional(readOnly = true)
+    public Usuario getOne(UUID id) {
+        return usuarioRepositorio.findById(id).orElse(null);
+    }
+
     @Transactional
     public void modificarUsuario(String nombre, String email, String password, String password2) throws MiException {
 
         validar(nombre, email, password, password2);
 
         Optional<Usuario> respuesta = Optional.ofNullable(usuarioRepositorio.buscarPorEmail(email));
-        
 
         if (respuesta.isEmpty()) {
             throw new MiException("El usuario especificado no existe.");
@@ -88,22 +90,18 @@ public class UsuarioServicio implements UserDetailsService {
     }
 
     @Transactional
-    public void cambiarRol(UUID id){
+    public void cambiarRol(UUID id) {
         Optional<Usuario> respuesta = usuarioRepositorio.findById(id);
 
-        if(respuesta.isPresent()){
+        if (respuesta.isPresent()) {
             Usuario usuario = respuesta.get();
-            if(usuario.getRol().equals(Rol.USER)){
+            if (usuario.getRol().equals(Rol.USER)) {
                 usuario.setRol(Rol.ADMIN);
-            }else if (usuario.getRol().equals(Rol.ADMIN)){
+            } else if (usuario.getRol().equals(Rol.ADMIN)) {
                 usuario.setRol(Rol.USER);
             }
-            
+
         }
-    }
-    @Transactional(readOnly = true)
-    public Usuario getOne(UUID id){
-        return usuarioRepositorio.findById(id).orElse(null);
     }
 
     @Override
@@ -114,8 +112,8 @@ public class UsuarioServicio implements UserDetailsService {
         if (usuario != null) {
 
             List<GrantedAuthority> permisos = new ArrayList<>();
-            
-            GrantedAuthority p = new SimpleGrantedAuthority("ROLE_"+ usuario.getRol().toString());
+
+            GrantedAuthority p = new SimpleGrantedAuthority("ROLE_" + usuario.getRol().toString());
 
             permisos.add(p);
 
@@ -125,10 +123,8 @@ public class UsuarioServicio implements UserDetailsService {
             session.setAttribute("usuariosession", usuario);
 
             return new User(usuario.getEmail(), usuario.getPassword(), permisos);
-        }else{
+        } else {
             return null;
         }
     }
 }
-
-

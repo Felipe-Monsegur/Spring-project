@@ -15,15 +15,17 @@ import com.egg.biblioteca.repositorios.EditorialRepositorio;
 
 @Service
 public class EditorialServicio {
+    
+    @Autowired
+    private EditorialRepositorio editorialRepositorio;
+
     private void validar(String nombre) throws MiException {
         if (nombre.isEmpty() || nombre == null) {
             throw new MiException("el nombre no puede ser nulo o estar vacío");
         }
     }
 
-    @Autowired
-    private EditorialRepositorio editorialRepositorio;
-
+    
     @Transactional
     public void crearEditorial(String nombre) throws MiException {
         validar(nombre);

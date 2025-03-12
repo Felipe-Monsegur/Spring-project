@@ -15,14 +15,15 @@ import com.egg.biblioteca.repositorios.AutorRepositorio;
 
 @Service
 public class AutorServicio {
+    
+    @Autowired
+    private AutorRepositorio autorRepositorio;
+
     private void validar(String nombre) throws MiException {
         if (nombre.isEmpty() || nombre == null) {
             throw new MiException("el nombre no puede ser nulo o estar vacío");
         }
     }
-    
-    @Autowired
-    private AutorRepositorio autorRepositorio;
 
     @Transactional
     public void crearAutor(String nombre) throws MiException {
