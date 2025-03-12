@@ -18,6 +18,7 @@ import jakarta.servlet.http.HttpSession;
 @Controller
 @RequestMapping("/")
 public class PortalControlador {
+
     @Autowired
     private UsuarioServicio usuarioServicio;
 
@@ -32,18 +33,20 @@ public class PortalControlador {
     }
 
     @PostMapping("/registro")
-    public String registro(@RequestParam String nombre, @RequestParam String email, @RequestParam String password,
-            @RequestParam String password2, ModelMap model) {
+    public String registro(@RequestParam String nombre, @RequestParam String email,
+            @RequestParam String password, @RequestParam String password2,
+            ModelMap modelMap) {
         try {
             usuarioServicio.registrar(nombre, email, password, password2);
-            model.put("exito", "El usuario fue creado correctamente.");
-            return "index.html";
+            modelMap.put("exito", "Usuario registrado Correctamente");
 
+            return "index.html";
         } catch (MiException ex) {
-            model.put("error", ex.getMessage());
-            model.put("nombre", nombre);
-            model.put("email", email);
-            return "registro.html"; // Retornamos al formulario de registro con el mensaje de error.
+            modelMap.put("error", ex.getMessage());
+            modelMap.put("nombre", nombre);
+            modelMap.put("email", email);
+
+            return "registro.html"; // Volvemos a cargar el formulario
         }
     }
 
@@ -59,17 +62,9 @@ public class PortalControlador {
     @GetMapping("/inicio")
     public String inicio(HttpSession session) {
         Usuario logueado = (Usuario) session.getAttribute("usuariosession");
-
         if (logueado.getRol().toString().equals("ADMIN")) {
             return "redirect:/admin/dashboard";
         }
-
         return "inicio.html";
     }
-
-    @GetMapping("/logout")
-    public String logout() {
-        return "login.html";
-    }
-
 }

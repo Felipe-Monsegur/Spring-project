@@ -7,6 +7,6 @@ import org.springframework.stereotype.Repository;
 
 import com.egg.biblioteca.entidades.*;
 
-@Repository
-public interface AutorRepositorio extends JpaRepository<Autor, UUID> {
+@Repository 
+public interface AutorRepositorio extends JpaRepository<Autor, UUID>{
 }

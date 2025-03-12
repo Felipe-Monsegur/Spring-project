@@ -32,17 +32,18 @@ public class UsuarioServicio implements UserDetailsService {
     private UsuarioRepositorio usuarioRepositorio;
 
     @Transactional
-    public void registrar(String nombre, String email, String password, String password2) throws MiException {
+    public void registrar(String nombre,String email, String password, String password2) throws MiException{
         validar(nombre, email, password, password2);
         Usuario usuario = new Usuario();
         usuario.setNombre(nombre);
         usuario.setEmail(email);
-        usuario.setPassword(new BCryptPasswordEncoder().encode(password));
+         usuario.setPassword(new BCryptPasswordEncoder().encode(password));
         usuario.setRol(Rol.USER);
 
         usuarioRepositorio.save(usuario);
     }
 
+    
     private void validar(String nombre, String email, String password, String password2) throws MiException {
         if (nombre.isEmpty() || nombre == null) {
             throw new MiException("el nombre no puede ser nulo o estar vacío");
@@ -58,24 +59,6 @@ public class UsuarioServicio implements UserDetailsService {
         }
     }
 
-    @Override
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-
-        Usuario usuario = usuarioRepositorio.buscarPorEmail(email);
-
-        if (usuario != null) {
-            List<GrantedAuthority> permisos = new ArrayList<>();
-            GrantedAuthority p = new SimpleGrantedAuthority("ROLE_" + usuario.getRol().toString());
-            permisos.add(p);
-            ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
-            HttpSession session = attr.getRequest().getSession(true);
-            session.setAttribute("usuariosession", usuario);
-            return new User(usuario.getEmail(), usuario.getPassword(), permisos);
-        } else {
-            return null;
-        }
-
-    }
 
     @Transactional(readOnly = true)
     public List<Usuario> listarUsuarios() {
@@ -90,6 +73,7 @@ public class UsuarioServicio implements UserDetailsService {
         validar(nombre, email, password, password2);
 
         Optional<Usuario> respuesta = Optional.ofNullable(usuarioRepositorio.buscarPorEmail(email));
+        
 
         if (respuesta.isEmpty()) {
             throw new MiException("El usuario especificado no existe.");
@@ -104,22 +88,47 @@ public class UsuarioServicio implements UserDetailsService {
     }
 
     @Transactional
-    public void cambiarRol(UUID id) {
+    public void cambiarRol(UUID id){
         Optional<Usuario> respuesta = usuarioRepositorio.findById(id);
 
-        if (respuesta.isPresent()) {
+        if(respuesta.isPresent()){
             Usuario usuario = respuesta.get();
-            if (usuario.getRol().equals(Rol.USER)) {
+            if(usuario.getRol().equals(Rol.USER)){
                 usuario.setRol(Rol.ADMIN);
-            } else if (usuario.getRol().equals(Rol.ADMIN)) {
+            }else if (usuario.getRol().equals(Rol.ADMIN)){
                 usuario.setRol(Rol.USER);
             }
-
+            
         }
     }
-
     @Transactional(readOnly = true)
-    public Usuario getOne(UUID id) {
+    public Usuario getOne(UUID id){
         return usuarioRepositorio.findById(id).orElse(null);
     }
+
+    @Override
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+
+        Usuario usuario = usuarioRepositorio.buscarPorEmail(email);
+
+        if (usuario != null) {
+
+            List<GrantedAuthority> permisos = new ArrayList<>();
+            
+            GrantedAuthority p = new SimpleGrantedAuthority("ROLE_"+ usuario.getRol().toString());
+
+            permisos.add(p);
+
+            ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
+            HttpSession session = attr.getRequest().getSession(true);
+
+            session.setAttribute("usuariosession", usuario);
+
+            return new User(usuario.getEmail(), usuario.getPassword(), permisos);
+        }else{
+            return null;
+        }
+    }
 }
+
+

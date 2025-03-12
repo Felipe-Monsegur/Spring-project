@@ -15,14 +15,14 @@ import com.egg.biblioteca.repositorios.EditorialRepositorio;
 
 @Service
 public class EditorialServicio {
-    @Autowired
-    private EditorialRepositorio editorialRepositorio;
-
     private void validar(String nombre) throws MiException {
         if (nombre.isEmpty() || nombre == null) {
             throw new MiException("el nombre no puede ser nulo o estar vacío");
         }
     }
+
+    @Autowired
+    private EditorialRepositorio editorialRepositorio;
 
     @Transactional
     public void crearEditorial(String nombre) throws MiException {
@@ -54,19 +54,9 @@ public class EditorialServicio {
         }
     }
 
-    @Transactional
-    public void eliminar(UUID id) throws MiException {
-        Optional<Editorial> editorialOpt = editorialRepositorio.findById(id);
-        if (editorialOpt.isPresent()) {
-            editorialRepositorio.delete(editorialOpt.get());
-        } else {
-            throw new MiException("La editorial con el ID especificado no existe");
-        }
-    }
-
     @Transactional(readOnly = true)
-    public Editorial getOne(UUID id) {
-        return editorialRepositorio.getReferenceById(id);
+    public Editorial getOne(UUID id){
+        return editorialRepositorio.getReferenceById (id);
     }
 
 }

@@ -18,6 +18,24 @@ import com.egg.biblioteca.repositorios.LibroRepositorio;
 
 @Service
 public class LibroServicio {
+    private void validar(Long isbn,String titulo, Integer ejemplares, UUID idAutor, UUID idEditorial) throws MiException {
+        if (isbn == null || isbn==0) {
+            throw new MiException("el isbn no puede ser nulo o 0");
+        }
+        if (titulo.isEmpty() || titulo == null) {
+            throw new MiException("el titulo no puede ser nulo o estar vacío");
+        }
+        if (ejemplares == null || ejemplares<0) {
+            throw new MiException("los ejemplares no puede ser nulo o negativo");
+        }
+        if ( idAutor == null) {
+            throw new MiException("el idAutor no puede ser nulo o estar vacío");
+        }
+        if (idEditorial == null) {
+            throw new MiException("el isbn no puede ser nulo o estar vacío");
+        }
+    }
+
     @Autowired
     private LibroRepositorio libroRepositorio;
 
@@ -27,47 +45,19 @@ public class LibroServicio {
     @Autowired
     private EditorialRepositorio editorialRepositorio;
 
-    private void validar(Long isbn, String titulo, Integer ejemplares, UUID idAutor, UUID idEditorial)
-            throws MiException {
-        if (isbn == null || isbn == 0) {
-            throw new MiException("el isbn no puede ser nulo o 0");
-        }
-        if (titulo.isEmpty() || titulo == null) {
-            throw new MiException("el titulo no puede ser nulo o estar vacío");
-        }
-        if (ejemplares == null || ejemplares < 0) {
-            throw new MiException("los ejemplares no puede ser nulo o negativo");
-        }
-        if (idAutor == null) {
-            throw new MiException("el idAutor no puede ser nulo o estar vacío");
-        }
-        if (idEditorial == null) {
-            throw new MiException("el isbn no puede ser nulo o estar vacío");
-        }
-    }
-
     @Transactional
-    public void crearLibro(Long isbn, String titulo, Integer ejemplares, UUID idAutor, UUID idEditorial)
-            throws MiException {
-
-        validar(isbn, titulo, ejemplares, idAutor, idEditorial);
-
+    public void crearLibro(Long isbn, String titulo, Integer ejemplares, UUID idAutor, UUID idEditorial) throws MiException {
+        validar(isbn,titulo,ejemplares,idAutor,idEditorial);
         Autor autor = autorRepositorio.findById(idAutor).get();
         Editorial editorial = editorialRepositorio.findById(idEditorial).get();
-
-        if (autor == null) {
-            throw new MiException("El autor especificado no existe.");
-        }
-
-        if (editorial == null) {
-            throw new MiException("La editorial especificada no existe.");
-        }
 
         Libro libro = new Libro();
         libro.setIsbn(isbn);
         libro.setTitulo(titulo);
         libro.setEjemplares(ejemplares);
+
         libro.setAlta(new Date());
+
         libro.setAutor(autor);
         libro.setEditorial(editorial);
 
@@ -84,38 +74,59 @@ public class LibroServicio {
     }
 
     @Transactional
+    public void modificarLibro(String titulo, Integer ejemplares, long isbn, UUID idAutor, UUID idEditorial) throws MiException {
+        validar(isbn,titulo,ejemplares,idAutor,idEditorial);
+        Optional<Libro> respuestaLibro = libroRepositorio.findById(isbn);
+
+        if (respuestaLibro.isPresent()) {
+            Optional<Autor> respuestaAutor = autorRepositorio.findById(idAutor);
+            Optional<Editorial> respuestaEditorial = editorialRepositorio.findById(idEditorial);
+            if (respuestaEditorial.isPresent() && respuestaAutor.isPresent()) {
+                Libro libro = respuestaLibro.get();
+                Autor autor = respuestaAutor.get();
+                Editorial editorial = respuestaEditorial.get();
+
+                libro.setTitulo(titulo);
+                libro.setEjemplares(ejemplares);
+                libro.setAutor(autor);
+                libro.setEditorial(editorial);
+
+                libroRepositorio.save(libro);
+            }
+        }
+    }
+
+    @Transactional(readOnly = true)
+    public Libro getOne(Long isbn){
+        return libroRepositorio.getReferenceById (isbn);
+    }
+
+    @Transactional
     public void modificarLibro(Long isbn, String titulo, Integer ejemplares, UUID idAutor, UUID idEditorial)
             throws MiException {
-
         validar(isbn, titulo, ejemplares, idAutor, idEditorial);
-
         Optional<Libro> respuesta = libroRepositorio.findById(isbn);
         Optional<Autor> respuestaAutor = autorRepositorio.findById(idAutor);
         Optional<Editorial> respuestaEditorial = editorialRepositorio.findById(idEditorial);
 
-        if (respuesta.isEmpty()) {
-            throw new MiException("El libro especificado no existe.");
+        Autor autor = new Autor();
+        Editorial editorial = new Editorial();
+
+        if (respuestaAutor.isPresent()) {
+            autor = respuestaAutor.get();
         }
 
-        if (respuestaAutor.isEmpty()) {
-            throw new MiException("El autor especificado no existe.");
+        if (respuestaEditorial.isPresent()) {
+            editorial = respuestaEditorial.get();
         }
 
-        if (respuestaEditorial.isEmpty()) {
-            throw new MiException("La editorial especificada no existe.");
+        if (respuesta.isPresent()) {
+            Libro libro = respuesta.get();
+            libro.setTitulo(titulo);
+            libro.setEjemplares(ejemplares);
+            libro.setAutor(autor);
+            libro.setEditorial(editorial);
         }
-
-        Libro libro = respuesta.get();
-        libro.setTitulo(titulo);
-        libro.setEjemplares(ejemplares);
-        libro.setAutor(respuestaAutor.get());
-        libro.setEditorial(respuestaEditorial.get());
-
-        libroRepositorio.save(libro);
     }
 
-    @Transactional(readOnly = true)
-    public Libro getOne(Long isbn) {
-        return libroRepositorio.getReferenceById(isbn);
-    }
 }
