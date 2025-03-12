@@ -20,7 +20,7 @@ public class AutorServicio {
             throw new MiException("el nombre no puede ser nulo o estar vacío");
         }
     }
-    
+
     @Autowired
     private AutorRepositorio autorRepositorio;
 
@@ -44,18 +44,34 @@ public class AutorServicio {
 
     @Transactional
     public void modificarAutor(String nombre, UUID id) throws MiException {
+
         validar(nombre);
         Optional<Autor> respuesta = autorRepositorio.findById(id);
+
         if (respuesta.isPresent()) {
             Autor autor = respuesta.get();
-
             autor.setNombre(nombre);
             autorRepositorio.save(autor);
+
+        } else {
+            throw new MiException("No se encontró un autor con el ID especificado");
         }
     }
 
-    @Transactional(readOnly = true)
-    public Autor getOne(UUID id){
-        return autorRepositorio.getReferenceById (id);
+    @Transactional
+    public void eliminar(UUID id) throws MiException {
+        Optional<Autor> autorOpt = autorRepositorio.findById(id);
+        if (autorOpt.isPresent()) {
+            autorRepositorio.delete(autorOpt.get());
+        } else {
+            throw new MiException("El autor con el ID especificado no existe");
+        }
+
     }
+
+    @Transactional(readOnly = true)
+    public Autor getOne(UUID id) {
+        return autorRepositorio.getReferenceById(id);
+    }
+
 }

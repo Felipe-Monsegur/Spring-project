@@ -16,10 +16,9 @@ public class Autor {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id")
     private UUID id;
-    
+
     @Column(name = "nombre")
     private String nombre;
-
 
     public Autor() {
     }
@@ -27,13 +26,16 @@ public class Autor {
     public UUID getId() {
         return id;
     }
+
     public void setId(UUID id) {
         this.id = id;
     }
+
     public String getNombre() {
         return nombre;
     }
+
     public void setNombre(String nombre) {
         this.nombre = nombre;
-    }  
+    }
 }
