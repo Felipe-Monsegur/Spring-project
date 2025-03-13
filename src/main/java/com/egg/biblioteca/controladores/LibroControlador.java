@@ -31,7 +31,7 @@ public class LibroControlador {
     @Autowired
     private EditorialServicio editorialServicio;
 
-      @GetMapping("/registrar") // localhost:8080/libro/registrar
+    @GetMapping("/registrar") // localhost:8080/libro/registrar
     public String registrar(ModelMap model) {
         List<Autor> autores = autorServicio.listarAutores();
         List<Editorial> editoriales = editorialServicio.listarEditoriales();
@@ -40,39 +40,37 @@ public class LibroControlador {
         return "libro_form.html";
     }
 
-
-     @PostMapping("/registro")
-  public String registro(
-        @RequestParam(required = false) Long isbn, 
-        @RequestParam String titulo, 
-        @RequestParam(required = false) Integer ejemplares, 
-        @RequestParam String idAutor,
-        @RequestParam String idEditorial,
-        ModelMap modelMap) {
+    @PostMapping("/registro")
+    public String registro(
+            @RequestParam(required = false) Long isbn,
+            @RequestParam String titulo,
+            @RequestParam(required = false) Integer ejemplares,
+            @RequestParam String idAutor,
+            @RequestParam String idEditorial,
+            ModelMap modelMap) {
         try {
             UUID uuidAutor = UUID.fromString(idAutor);
             UUID uuidEditorial = UUID.fromString(idEditorial);
             libroServicio.crearLibro(isbn, titulo, ejemplares, uuidAutor, uuidEditorial);
-            modelMap.put("exito","El libro fue cargado correctamente");
+            modelMap.put("exito", "El libro fue cargado correctamente");
         } catch (IllegalArgumentException e) { // Captura error si los UUID no son válidos
             modelMap.put("error", "ID de Autor o Editorial no válido");
             return "libro_form.html";
-            } catch (MiException ex) {
+        } catch (MiException ex) {
             modelMap.put("error", ex.getMessage());
             return "libro_form.html";
-            }
+        }
 
-        
         return "index.html";
     }
-    
+
     @GetMapping("/lista")
     public String listar(ModelMap modelo) {
         List<Libro> libros = libroServicio.listarLibros();
         modelo.addAttribute("libros", libros);
         return "libro_list.html";
     }
-    
+
     @GetMapping("/modificar/{isbn}")
     public String modificar(@PathVariable Long isbn, ModelMap modelo) {
 

@@ -1,6 +1,5 @@
 package com.egg.biblioteca.controladores;
 
-
 import java.util.List;
 import java.util.UUID;
 import java.util.logging.Level;
@@ -39,14 +38,14 @@ public class AutorControlador {
         } catch (MiException ex) {
             Logger.getLogger(AutorControlador.class.getName()).log(Level.SEVERE, null, ex);
             modelMap.addAttribute("error", "Ocurrió un error");
-            
+
             return "autor_form.html";
         }
         return "index.html";
 
     }
 
-       @GetMapping("/lista")
+    @GetMapping("/lista")
     public String listar(ModelMap modelo) {
         List<Autor> autores = autorServicio.listarAutores();
         modelo.addAttribute("autores", autores);
@@ -59,7 +58,6 @@ public class AutorControlador {
 
         return "autor_modificar.html";
     }
-
 
     @PostMapping("/modificar/{id}")
     public String modificar(@PathVariable UUID id, String nombre, ModelMap modelo) {

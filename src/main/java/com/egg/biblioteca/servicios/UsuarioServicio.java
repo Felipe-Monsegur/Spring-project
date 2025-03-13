@@ -17,7 +17,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+import org.springframework.web.multipart.MultipartFile;
 
+import com.egg.biblioteca.entidades.Imagen;
 import com.egg.biblioteca.entidades.Usuario;
 import com.egg.biblioteca.enumeraciones.Rol;
 import com.egg.biblioteca.excepciones.MiException;
@@ -30,6 +32,9 @@ public class UsuarioServicio implements UserDetailsService {
 
     @Autowired
     private UsuarioRepositorio usuarioRepositorio;
+
+    @Autowired
+    private ImagenServicio imagenServicio;
 
     private void validar(String nombre, String email, String password, String password2) throws MiException {
         if (nombre.isEmpty() || nombre == null) {
@@ -47,15 +52,46 @@ public class UsuarioServicio implements UserDetailsService {
     }
 
     @Transactional
-    public void registrar(String nombre, String email, String password, String password2) throws MiException {
+    public void registrar(String nombre, String email, String password, String password2, MultipartFile archivo) throws MiException {
         validar(nombre, email, password, password2);
         Usuario usuario = new Usuario();
         usuario.setNombre(nombre);
         usuario.setEmail(email);
         usuario.setPassword(new BCryptPasswordEncoder().encode(password));
         usuario.setRol(Rol.USER);
-
+        
+        if (archivo != null && !archivo.isEmpty()) { // Asegurar que hay archivo
+            Imagen imagen = imagenServicio.guardar(archivo);
+            usuario.setImagen(imagen);
+        }
+    
         usuarioRepositorio.save(usuario);
+        usuarioRepositorio.save(usuario);
+    }
+
+    @Transactional
+    public void actualizar(UUID idUsuaio, String nombre, String email, String password, String password2, MultipartFile archivo) throws MiException {
+        validar(nombre, email, password, password2);
+        Optional<Usuario> respuesta = usuarioRepositorio.findById(idUsuaio);
+        if (respuesta.isPresent()){
+            Usuario usuario = new Usuario();
+            usuario.setNombre(nombre);
+            usuario.setEmail(email);
+            usuario.setPassword(new BCryptPasswordEncoder().encode(password));
+            usuario.setRol(Rol.USER);
+            
+            UUID idImagen = null;
+
+            if(usuario.getImagen() != null){
+                idImagen = usuario.getImagen().getId();
+            }
+            Imagen imagen = imagenServicio.actualizar(archivo, idImagen);
+
+            usuario.setImagen(imagen);
+            
+            usuarioRepositorio.save(usuario);
+        }
+        
     }
 
     @Transactional(readOnly = true)

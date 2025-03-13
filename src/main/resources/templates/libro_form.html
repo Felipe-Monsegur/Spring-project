@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"   xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
 <head th:replace="~{fragments/head :: head}"></head>
 
@@ -10,9 +10,9 @@
     <div class="container-fluid m-5 contenedor">
 
         <form class="formulario" th:action="@{/libro/registro}" method="POST">
-                
+
             <div class="form-group my-3">
-                <h5 class="card-title">Cargar Libro</h5> 
+                <h5 class="card-title">Cargar Libro</h5>
                 <input type="number" class="form-control" name="isbn" placeholder="ISBN">
             </div>
             <div class="form-group my-3">
@@ -22,7 +22,7 @@
             <div class="form-group my-3">
                 <input type="number" class="form-control" name="ejemplares" placeholder="Cantidad de Ejemplares">
             </div>
-            
+
             <div class="form-group my-3">
                 <select name="idAutor">
                     <option value="">Seleccionar Autor</option>
@@ -31,21 +31,22 @@
                 </select>
             </div>
             <div class="form-group my-3">
-                <select name="idEditorial">  
+                <select name="idEditorial">
                     <option value="">Seleccionar Editorial</option>
                     <!-- agregamos la línea para intectar la lista almacenada en el modelo -->
-                    <option th:each="editorial : ${editoriales}" th:value="${editorial.id}" th:text="${editorial.nombre}">
+                    <option th:each="editorial : ${editoriales}" th:value="${editorial.id}"
+                        th:text="${editorial.nombre}">
 
                 </select>
             </div>
 
-            <div th:if="${error != null}" class="card text-white bg-danger mb-3 mensajeError" >
+            <div th:if="${error != null}" class="card text-white bg-danger mb-3 mensajeError">
                 <div class="card-body">
                     <h5 class="card-title">Error 👎</h5>
                     <p class="card-text" th:text="${error}"></p>
                 </div>
             </div>
-            <div th:if="${exito != null}" class="card text-white bg-success mb-3 mt-3 mensajeExito" >
+            <div th:if="${exito != null}" class="card text-white bg-success mb-3 mt-3 mensajeExito">
                 <div class="card-body">
                     <h5 class="card-title">Exito👍</h5>
                     <p class="card-text" th:text="${exito}"></p>

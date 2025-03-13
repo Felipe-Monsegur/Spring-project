@@ -16,17 +16,17 @@ import com.egg.biblioteca.servicios.UsuarioServicio;
 @Controller
 @RequestMapping("/admin")
 public class AdminControlador {
-    
+
     @Autowired
     private UsuarioServicio usuarioServicio;
-   
+
     @GetMapping("/dashboard")
-    public String panelAdministrativo(){
-        return"panel.html";
+    public String panelAdministrativo() {
+        return "panel.html";
     }
 
     @GetMapping("/usuarios")
-    public String listar(ModelMap modelo){
+    public String listar(ModelMap modelo) {
         List<Usuario> usuarios = usuarioServicio.listarUsuarios();
         modelo.addAttribute("usuarios", usuarios);
 
@@ -34,7 +34,7 @@ public class AdminControlador {
     }
 
     @GetMapping("/modificarRol/{id}")
-    public String cambiarRol(@PathVariable UUID id){
+    public String cambiarRol(@PathVariable UUID id) {
         usuarioServicio.cambiarRol(id);
         return "redirect:/admin/usuarios";
     }
