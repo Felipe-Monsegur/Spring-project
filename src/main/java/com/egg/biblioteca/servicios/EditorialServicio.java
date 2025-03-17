@@ -41,20 +41,26 @@ public class EditorialServicio {
     }
     
     //Método para modificar editorial
-    @Transactional
-    //Opción con UUID
-    // public void modificarEditorial(UUID id, String nombre) throws MiException{
-    public void modificarEditorial(String id, String nombre) throws MiException{
+    public void modificarEditorial(String id, String nombre) throws MiException {
         validar(nombre);
-
+    
+        if (id == null || id.isEmpty()) {
+            throw new MiException("El ID de la editorial no puede ser nulo o vacío.");
+        }
+    
         Optional<Editorial> respuesta = editorialRepositorio.findById(id);
-
-        if (respuesta.isPresent()) { // Si encuentra el objeto por id
+    
+        if (respuesta.isPresent()) {
             Editorial editorial = respuesta.get();
-            editorial.setNombre(nombre); // Seteo la informacion con el dato recibido
-            editorialRepositorio.save(editorial);
+            editorial.setNombre(nombre);
+    
+            try {
+                editorialRepositorio.save(editorial);
+            } catch (Exception e) {
+                throw new MiException("Error al guardar la editorial: " + e.getMessage());
+            }
         } else {
-            throw new MiException("No se encontró una editorial con el ID especificado");
+            throw new MiException("No se encontró una editorial con el ID especificado.");
         }
     }
     
@@ -73,8 +79,6 @@ public class EditorialServicio {
 
     // Método para recuperar una editorial por su ID
     @Transactional(readOnly = true)
-    //Opción con UUID
-    // public Editorial getOne(UUID id) {
     public Editorial getOne(String id) {
         return editorialRepositorio.findById(id).orElse(null);
     }

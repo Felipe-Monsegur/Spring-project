@@ -49,7 +49,8 @@ public class EditorialControlador {
         model.addAttribute("editoriales", editorialServicio.listarEditoriales());
         return "editorial_list.html";
     }
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")/
+
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @GetMapping("/modificar/{id}")
     public String modificar(@PathVariable String id, ModelMap model) {
         model.put("editorial", editorialServicio.getOne(id));
@@ -57,7 +58,7 @@ public class EditorialControlador {
     }
     
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
-    @PostMapping("{id}")
+     @PostMapping("/modificar/{id}")
     public String modificar(@PathVariable String id, String nombre, ModelMap model) {
         try{
             editorialServicio.modificarEditorial(id, nombre);

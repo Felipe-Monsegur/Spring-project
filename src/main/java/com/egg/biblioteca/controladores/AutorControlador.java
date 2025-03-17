@@ -63,7 +63,7 @@ public class AutorControlador {
     }
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")//Nos aseguramos que sin este ROL nadie pueda registrar. Ni usando la URL
-    @PostMapping("{id}")
+    @PostMapping("/modificar/{id}")
     public String modificar(@PathVariable String id, String nombre, ModelMap model) {
         try{
             autorServicio.modificarAutor(nombre, id);

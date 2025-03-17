@@ -83,9 +83,6 @@ public class PortalControlador {
 
     @PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_ADMIN')")
     @PostMapping("/perfil/{id}")
-    //Opción con UUID
-    // public String actualizar(MultipartFile archivo, @PathVariable UUID id, @RequestParam String nombre, @RequestParam String email, 
-    //     @RequestParam String password, @RequestParam String password2, ModelMap modelo) {
     public String actualizar(MultipartFile archivo, @PathVariable String id, @RequestParam String nombre, @RequestParam String email, 
         @RequestParam String password, @RequestParam String password2, ModelMap modelo) {
         
