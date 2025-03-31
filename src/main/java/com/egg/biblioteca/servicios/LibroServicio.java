@@ -16,7 +16,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
-// import java.util.UUID;
 
 @Service
 public class LibroServicio {
@@ -32,8 +31,6 @@ public class LibroServicio {
 
     //Método para crear un Libro
     @Transactional
-    //Opción con UUID
-    // public void crearLibro(Long isbn, String titulo, Integer ejemplares, UUID idAutor, UUID idEditorial) throws MiException {
     public void crearLibro(Long isbn, String titulo, Integer ejemplares, String idAutor, String idEditorial) throws MiException {
 
         validar(isbn, titulo, ejemplares, idAutor, idEditorial);
@@ -75,8 +72,6 @@ public class LibroServicio {
 
     //Método para modificar libro
     @Transactional
-    //Opción con UUID
-    // public void modificarLibro(Long isbn, String titulo, Integer ejemplares, UUID idAutor, UUID idEditorial) throws MiException {
     public void modificarLibro(Long isbn, String titulo, Integer ejemplares, String idAutor, String idEditorial) throws MiException {
 
         validar(isbn, titulo, ejemplares, idAutor, idEditorial);
@@ -113,8 +108,6 @@ public class LibroServicio {
     }
 
     //Método para validar los atributos
-    //Opción con UUID
-    // private void validar(Long isbn, String titulo, Integer ejemplares, UUID idAutor, UUID idEditorial) throws MiException {
     private void validar(Long isbn, String titulo, Integer ejemplares, String idAutor, String idEditorial) throws MiException {
 
         if (isbn == null) {

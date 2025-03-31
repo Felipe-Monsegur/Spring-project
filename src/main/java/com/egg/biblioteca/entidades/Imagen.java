@@ -1,6 +1,5 @@
 package com.egg.biblioteca.entidades;
 
-// import java.util.UUID;
 import jakarta.persistence.Basic;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;

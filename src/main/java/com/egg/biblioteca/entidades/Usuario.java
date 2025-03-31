@@ -1,7 +1,5 @@
 package com.egg.biblioteca.entidades;
 
-// import java.util.UUID;
-
 import com.egg.biblioteca.enumeraciones.Rol;
 
 import jakarta.persistence.Entity;

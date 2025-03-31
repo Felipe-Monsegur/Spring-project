@@ -5,7 +5,7 @@ import com.egg.biblioteca.excepciones.MiException;
 import com.egg.biblioteca.repositorios.ImagenRepositorio;
 import java.util.List;
 import java.util.Optional;
-// import java.util.UUID;
+
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
